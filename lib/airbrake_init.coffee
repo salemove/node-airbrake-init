@@ -4,12 +4,14 @@ exports.initAirbrake = (opts) ->
 
   airbrake = require('airbrake').createClient(opts.projectId, opts.apiKey)
 
-  airbrake.protocol = opts.protocol || 'https'
-  airbrake.servicehost = opts.servicehost || 'api.airbrake.io'
+  airbrake.env = opts.env if opts.env
+  airbrake.protocol = opts.protocol if opts.protocol
+  airbrake.servicehost = opts.host if opts.host
   airbrake.developmentEnvironments = opts.developmentEnvironments if opts.developmentEnvironments
-  airbrake.blackListKeys = opts.blackListKeys
-  airbrake.whiteListKeys = opts.whiteListKeys
-  
+  airbrake.blackListKeys = opts.blackListKeys if opts.blackListKeys
+  airbrake.whiteListKeys = opts.whiteListKeys if opts.whiteListKeys
+  airbrake.ignoredExceptions = opts.ignoredExceptions if opts.ignoredExceptions
+
   airbrake
 
 exports.initWinstonAirbrake = (opts) ->
@@ -23,10 +25,10 @@ exports.initWinstonAirbrake = (opts) ->
 
   winstonAirbrake
 
-checkRequiredFields = (opts, isWinstonAirbrake) ->
-  unless opts.projectId && isWinstonAirbrake
-    throw 'You must specify an airbrake project ID'
+checkRequiredFields = (opts, {isWinstonAirbrake}) ->
   unless opts.apiKey
     throw 'You must specify an airbrake API key'
   unless opts.whiteListKeys
     throw 'You must specify a whitelist'
+  unless (isWinstonAirbrake || opts.projectId)
+    throw 'You must specify an airbrake project ID'
