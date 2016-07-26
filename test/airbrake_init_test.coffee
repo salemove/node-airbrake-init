@@ -31,6 +31,12 @@ describe 'airbrake_init', ->
 
   describe 'vanilla airbrake', ->
 
+    createAirbrakeWithConfigEntry = (key, value) ->
+      AirbrakeInit.initAirbrake(withEntry(exampleKeys, key, value))
+
+    createAirbrakeWithoutConfigEntry = (key) ->
+      AirbrakeInit.initAirbrake(withoutEntry(exampleKeys, key))
+
     it 'has configuration', ->
       airbrake = AirbrakeInit.initAirbrake(exampleKeys)
       airbrake.projectId.should.eql('123')
@@ -41,37 +47,46 @@ describe 'airbrake_init', ->
       airbrake.env.should.eql('prod')
 
     it 'requires project ID', ->
-      expect(() -> AirbrakeInit.initAirbrake(withoutEntry(exampleKeys, 'projectId')))
-      .to.throw('You must specify an airbrake project ID')
+      expect(() -> createAirbrakeWithoutConfigEntry('projectId'))
+      .to.throw("You must specify an Airbrake project ID ('projectId')")
 
     it 'requires API key', ->
-      expect(() -> AirbrakeInit.initAirbrake(withoutEntry(exampleKeys, 'apiKey')))
-      .to.throw('You must specify an airbrake API key')
+      expect(() -> createAirbrakeWithoutConfigEntry('apiKey'))
+      .to.throw("You must specify an Airbrake API key ('apiKey')")
 
     it 'requires whitelist', ->
-      expect(() -> AirbrakeInit.initAirbrake(withoutEntry(exampleKeys, 'whiteListKeys')))
-      .to.throw('You must specify a whitelist')
+      expect(() -> createAirbrakeWithoutConfigEntry('whiteListKeys'))
+      .to.throw("You must specify a whitelist ('whiteListKeys')")
 
     describe 'whitelist', ->
+
+      buildNoticeEnvironmentJSON = (airbrake) ->
+        airbrake.environmentJSON(new Error('error'))
 
       beforeEach ->
         process.env.MY_VAR = 'sweet home'
         process.env.SECRET_STUFF = 'my secrets'
-        airbrake = AirbrakeInit.initAirbrake(withEntry(exampleKeys, 'whiteListKeys', ['MY_VAR']))
-        @noticeEnvironmentJson = airbrake.environmentJSON(new Error('error'))
 
       afterEach ->
         delete process.env.MY_VAR
-        delete process.env.SOME_SECRET_STUFF
+        delete process.env.SECRET_STUFF
 
       it 'allows parameters in list', ->
-        @noticeEnvironmentJson['MY_VAR'].should.eql('sweet home')
+        noticeJSON = buildNoticeEnvironmentJSON(createAirbrakeWithConfigEntry('whiteListKeys', ['MY_VAR']))
+        noticeJSON['MY_VAR'].should.eql('sweet home')
 
       it 'filters parameters not in list', ->
-        @noticeEnvironmentJson['SECRET_STUFF'].should.eql(filtered)
+        noticeJSON = buildNoticeEnvironmentJSON(createAirbrakeWithConfigEntry('whiteListKeys', ['MY_OTHER_VAR']))
+        noticeJSON['SECRET_STUFF'].should.eql(filtered)
 
 
   describe 'winston-airbrake', ->
+
+    createAirbrakeWithConfigEntry = (key, value) ->
+      AirbrakeInit.initWinstonAirbrake(withEntry(exampleKeys, key, value)).airbrakeClient
+
+    createAirbrakeWithoutConfigEntry = (key) ->
+      AirbrakeInit.initWinstonAirbrake(withoutEntry(exampleKeys, key))
 
     it 'has configuration', ->
       airbrake = AirbrakeInit.initWinstonAirbrake(exampleKeys).airbrakeClient
@@ -82,30 +97,33 @@ describe 'airbrake_init', ->
       airbrake.env.should.eql('prod')
 
     it 'requires API key', ->
-      expect(() -> AirbrakeInit.initWinstonAirbrake(withoutEntry(exampleKeys, 'apiKey')))
-        .to.throw('You must specify an airbrake API key')
+      expect(() -> createAirbrakeWithoutConfigEntry('apiKey'))
+        .to.throw("You must specify an Airbrake API key ('apiKey')")
 
     it 'requires whitelist', ->
-      expect(() -> AirbrakeInit.initWinstonAirbrake(withoutEntry(exampleKeys, 'whiteListKeys')))
-      .to.throw('You must specify a whitelist') 
+      expect(() -> createAirbrakeWithoutConfigEntry('whiteListKeys'))
+      .to.throw("You must specify a whitelist ('whiteListKeys')")
 
     describe 'whitelist', ->
+
+      buildNoticeXmlDom = (airbrakeClient) ->
+        new dom().parseFromString(airbrakeClient.notifyXml(new Error('error')).toString())
+
+      extractEnvironmentVariableFromNotice = (noticeXmlDom, key) ->
+        xpath.select("//request/cgi-data/var[@key='#{key}']/text()", noticeXmlDom)[0].toString()
 
       beforeEach ->
         process.env.MY_VAR = 'o hi'
         process.env.SECRET_STUFF = 'password'
-        winstonAirbrake = AirbrakeInit.initWinstonAirbrake(withEntry(exampleKeys, 'whiteListKeys', ['MY_VAR']))
-        xml = winstonAirbrake.airbrakeClient.notifyXml(new Error('error'), true).toString()
-        @noticeXmlDom = new dom().parseFromString(xml)
 
       afterEach ->
         delete process.env.MY_VAR
-        delete process.env.SOME_SECRET_STUFF
+        delete process.env.SECRET_STUFF
 
       it 'allows parameters in list', ->
-        home = xpath.select("//request/cgi-data/var[@key='MY_VAR']/text()", @noticeXmlDom)[0].toString()
-        expect(home).to.eql('o hi')
+        noticeXmlDom = buildNoticeXmlDom(createAirbrakeWithConfigEntry('whiteListKeys', ['MY_VAR']))
+        extractEnvironmentVariableFromNotice(noticeXmlDom, 'MY_VAR').should.eql('o hi')
 
       it 'filters parameters not in list', ->
-        secret = xpath.select("//request/cgi-data/var[@key='SECRET_STUFF']/text()", @noticeXmlDom)[0].toString()
-        expect(secret).to.eql(filtered)
+        noticeXmlDom = buildNoticeXmlDom(createAirbrakeWithConfigEntry('whiteListKeys', ['TOTALLY_NOT_SECRET']))
+        extractEnvironmentVariableFromNotice(noticeXmlDom, 'SECRET_STUFF').should.eql(filtered)

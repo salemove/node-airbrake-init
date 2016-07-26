@@ -28,8 +28,8 @@ exports.initWinstonAirbrake = (opts) ->
 
 checkRequiredFields = (opts, {isWinstonAirbrake}) ->
   unless opts.apiKey
-    throw 'You must specify an airbrake API key'
+    throw "You must specify an Airbrake API key ('apiKey')"
   unless opts.whiteListKeys
-    throw 'You must specify a whitelist'
+    throw "You must specify a whitelist ('whiteListKeys')"
   unless (isWinstonAirbrake || opts.projectId)
-    throw 'You must specify an airbrake project ID'
+    throw "You must specify an Airbrake project ID ('projectId')"
