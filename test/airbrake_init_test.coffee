@@ -78,6 +78,7 @@ describe 'airbrake_init', ->
       airbrake.key.should.eql('myAirbrakeId')
       airbrake.whiteListKeys.should.eql(['FOO'])
       airbrake.blackListKeys.should.eql(['BAR'])
+      airbrake.ignoredExceptions.should.eql(['plzignore'])
       airbrake.env.should.eql('prod')
 
     it 'requires API key', ->
@@ -93,7 +94,6 @@ describe 'airbrake_init', ->
       beforeEach ->
         process.env.MY_VAR = 'o hi'
         process.env.SECRET_STUFF = 'password'
-        opts = 
         winstonAirbrake = AirbrakeInit.initWinstonAirbrake(withEntry(exampleKeys, 'whiteListKeys', ['MY_VAR']))
         xml = winstonAirbrake.airbrakeClient.notifyXml(new Error('error'), true).toString()
         @noticeXmlDom = new dom().parseFromString(xml)

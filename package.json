@@ -1,8 +1,8 @@
 {
-  "name": "node-airbrake-init",
+  "name": "airbrake-init",
   "version": "0.0.1",
-  "description": "Instantiates Airbrake with default configuration options",
-  "main": ".lib/airbrake_init",
+  "description": "Helps to create node-airbrake and winston-airbrake instances",
+  "main": "lib/airbrake_init",
   "scripts": {
     "test": "mocha"
   },
@@ -11,7 +11,7 @@
     "url": "git+https://github.com/salemove/node-airbrake-init.git"
   },
   "keywords": [
-    "airbrake"
+    "airbrake", "winston-airbrake"
   ],
   "author": "Siim Viiklaid <siim.viiklaid@salemove.com>",
   "license": "Apache-2.0",
@@ -29,8 +29,7 @@
     "airbrake": "~> 1.0.3",
     "winston": "^2.2.0",
     "winston-airbrake": "0.1.0",
-    "coffee-script": "~> 1.9.2",
-    "config_loader": "~> 0.1.0"
+    "coffee-script": "~> 1.9.2"
   },
   "devDependencies": {
     "chai": "~> 3.5.0",

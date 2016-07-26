@@ -22,6 +22,7 @@ exports.initWinstonAirbrake = (opts) ->
 
   winstonAirbrake.airbrakeClient.whiteListKeys = opts.whiteListKeys if opts.whiteListKeys
   winstonAirbrake.airbrakeClient.blackListKeys = opts.blackListKeys if opts.blackListKeys
+  winstonAirbrake.airbrakeClient.ignoredExceptions = opts.ignoredExceptions if opts.ignoredExceptions
 
   winstonAirbrake
 
