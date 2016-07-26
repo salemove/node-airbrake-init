@@ -13,7 +13,7 @@
   "keywords": [
     "airbrake", "winston-airbrake"
   ],
-  "author": "Siim Viiklaid <siim.viiklaid@salemove.com>",
+  "author": "SaleMove TechMovers <techmovers@salemove.com>",
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/salemove/node-airbrake-init/issues"
