@@ -31,12 +31,6 @@ describe 'airbrake_init', ->
 
   describe 'vanilla airbrake', ->
 
-    createAirbrakeWithConfigEntry = (key, value) ->
-      AirbrakeInit.initAirbrake(withEntry(exampleKeys, key, value))
-
-    createAirbrakeWithoutConfigEntry = (key) ->
-      AirbrakeInit.initAirbrake(withoutEntry(exampleKeys, key))
-
     it 'has configuration', ->
       airbrake = AirbrakeInit.initAirbrake(exampleKeys)
       airbrake.projectId.should.eql('123')
@@ -60,9 +54,6 @@ describe 'airbrake_init', ->
 
     describe 'whitelist', ->
 
-      buildNoticeEnvironmentJSON = (airbrake) ->
-        airbrake.environmentJSON(new Error('error'))
-
       beforeEach ->
         process.env.MY_VAR = 'sweet home'
         process.env.SECRET_STUFF = 'my secrets'
@@ -79,14 +70,17 @@ describe 'airbrake_init', ->
         noticeJSON = buildNoticeEnvironmentJSON(createAirbrakeWithConfigEntry('whiteListKeys', ['MY_OTHER_VAR']))
         noticeJSON['SECRET_STUFF'].should.eql(filtered)
 
-
-  describe 'winston-airbrake', ->
+    buildNoticeEnvironmentJSON = (airbrake) ->
+      airbrake.environmentJSON(new Error('error'))
 
     createAirbrakeWithConfigEntry = (key, value) ->
-      AirbrakeInit.initWinstonAirbrake(withEntry(exampleKeys, key, value)).airbrakeClient
+      AirbrakeInit.initAirbrake(withEntry(exampleKeys, key, value))
 
     createAirbrakeWithoutConfigEntry = (key) ->
-      AirbrakeInit.initWinstonAirbrake(withoutEntry(exampleKeys, key))
+      AirbrakeInit.initAirbrake(withoutEntry(exampleKeys, key))
+
+
+  describe 'winston-airbrake', ->
 
     it 'has configuration', ->
       airbrake = AirbrakeInit.initWinstonAirbrake(exampleKeys).airbrakeClient
@@ -106,12 +100,6 @@ describe 'airbrake_init', ->
 
     describe 'whitelist', ->
 
-      buildNoticeXmlDom = (airbrakeClient) ->
-        new dom().parseFromString(airbrakeClient.notifyXml(new Error('error')).toString())
-
-      extractEnvironmentVariableFromNotice = (noticeXmlDom, key) ->
-        xpath.select("//request/cgi-data/var[@key='#{key}']/text()", noticeXmlDom)[0].toString()
-
       beforeEach ->
         process.env.MY_VAR = 'o hi'
         process.env.SECRET_STUFF = 'password'
@@ -127,3 +115,15 @@ describe 'airbrake_init', ->
       it 'filters parameters not in list', ->
         noticeXmlDom = buildNoticeXmlDom(createAirbrakeWithConfigEntry('whiteListKeys', ['TOTALLY_NOT_SECRET']))
         extractEnvironmentVariableFromNotice(noticeXmlDom, 'SECRET_STUFF').should.eql(filtered)
+
+    buildNoticeXmlDom = (airbrakeClient) ->
+      new dom().parseFromString(airbrakeClient.notifyXml(new Error('error')).toString())
+
+    extractEnvironmentVariableFromNotice = (noticeXmlDom, key) ->
+      xpath.select("//request/cgi-data/var[@key='#{key}']/text()", noticeXmlDom)[0].toString()
+
+    createAirbrakeWithConfigEntry = (key, value) ->
+      AirbrakeInit.initWinstonAirbrake(withEntry(exampleKeys, key, value)).airbrakeClient
+
+    createAirbrakeWithoutConfigEntry = (key) ->
+      AirbrakeInit.initWinstonAirbrake(withoutEntry(exampleKeys, key))
