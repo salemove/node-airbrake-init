@@ -1,0 +1,42 @@
+{
+  "name": "airbrake-init",
+  "version": "0.0.1",
+  "description": "Helps to create node-airbrake and winston-airbrake instances",
+  "main": "lib/airbrake_init",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/salemove/node-airbrake-init.git"
+  },
+  "keywords": [
+    "airbrake", "winston-airbrake"
+  ],
+  "author": "SaleMove TechMovers <techmovers@salemove.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/salemove/node-airbrake-init/issues"
+  },
+  "homepage": "https://github.com/salemove/node-airbrake-init#readme",
+  "scripts": {
+    "test": "mocha"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "airbrake": "~> 1.0.3",
+    "winston": "^2.2.0",
+    "winston-airbrake": "0.1.0",
+    "coffee-script": "~> 1.9.2"
+  },
+  "devDependencies": {
+    "chai": "~> 3.5.0",
+    "should": "~> 6.0.1",
+    "expect": "^1.14.0",
+    "mocha": "~> 2.4.5",
+    "xpath": "~> 0.0.23",
+    "xmldom": "~> 0.1.22"
+  }
+}
