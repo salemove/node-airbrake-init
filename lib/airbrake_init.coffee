@@ -17,6 +17,9 @@ exports.initAirbrake = (opts) ->
 exports.initWinstonAirbrake = (opts) ->
   checkRequiredFields(opts, isWinstonAirbrake: true)
 
+  if !(opts.env)
+    opts.env = process.env.NODE_ENV || 'development'
+
   WinstonAirbrake = require('winston-airbrake').Airbrake
   winstonAirbrake = new WinstonAirbrake(opts)
 
