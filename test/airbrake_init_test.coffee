@@ -1,5 +1,4 @@
-chai = require 'chai'
-expect = chai.expect
+expect = (require 'chai').expect
 xpath = require('xpath')
 dom = require('xmldom').DOMParser
 AirbrakeInit = require('../lib/airbrake_init')
@@ -33,12 +32,12 @@ describe 'airbrake_init', ->
 
     it 'has configuration', ->
       airbrake = AirbrakeInit.initAirbrake(exampleKeys)
-      airbrake.projectId.should.eql('123')
-      airbrake.key.should.eql('myAirbrakeId')
-      airbrake.whiteListKeys.should.eql(['FOO'])
-      airbrake.blackListKeys.should.eql(['BAR'])
-      airbrake.ignoredExceptions.should.eql(['plzignore'])
-      airbrake.env.should.eql('prod')
+      expect(airbrake.projectId).to.eql('123')
+      expect(airbrake.key).to.eql('myAirbrakeId')
+      expect(airbrake.whiteListKeys).to.eql(['FOO'])
+      expect(airbrake.blackListKeys).to.eql(['BAR'])
+      expect(airbrake.ignoredExceptions).to.eql(['plzignore'])
+      expect(airbrake.env).to.eql('prod')
 
     it 'requires project ID', ->
       expect(() -> createAirbrakeWithoutConfigEntry('projectId'))
@@ -53,7 +52,6 @@ describe 'airbrake_init', ->
       .to.throw("You must specify a whitelist ('whiteListKeys')")
 
     describe 'whitelist', ->
-
       beforeEach ->
         process.env.MY_VAR = 'sweet home'
         process.env.SECRET_STUFF = 'my secrets'
@@ -84,11 +82,11 @@ describe 'airbrake_init', ->
 
     it 'has configuration', ->
       airbrake = AirbrakeInit.initWinstonAirbrake(exampleKeys).airbrakeClient
-      airbrake.key.should.eql('myAirbrakeId')
-      airbrake.whiteListKeys.should.eql(['FOO'])
-      airbrake.blackListKeys.should.eql(['BAR'])
-      airbrake.ignoredExceptions.should.eql(['plzignore'])
-      airbrake.env.should.eql('prod')
+      expect(airbrake.key).to.eql('myAirbrakeId')
+      expect(airbrake.whiteListKeys).to.eql(['FOO'])
+      expect(airbrake.blackListKeys).to.eql(['BAR'])
+      expect(airbrake.ignoredExceptions).to.eql(['plzignore'])
+      expect(airbrake.env).to.eql('prod')
 
     it 'requires API key', ->
       expect(() -> createAirbrakeWithoutConfigEntry('apiKey'))
@@ -96,7 +94,21 @@ describe 'airbrake_init', ->
 
     it 'requires whitelist', ->
       expect(() -> createAirbrakeWithoutConfigEntry('whiteListKeys'))
-      .to.throw("You must specify a whitelist ('whiteListKeys')")
+        .to.throw("You must specify a whitelist ('whiteListKeys')")
+
+    it 'defaults env to development', ->
+      expect(createAirbrakeWithoutConfigEntry('env').env).to.eql('development')
+
+    describe 'with NODE_ENV set', ->
+      beforeEach ->
+        @node_env = process.env.NODE_ENV
+        process.env.NODE_ENV = 'foo'
+
+      afterEach ->
+        process.env.NODE_ENV = @node_env
+
+      it 'defaults env to NODE_ENV', ->
+        expect(createAirbrakeWithoutConfigEntry('env').env).to.eql('foo')
 
     describe 'whitelist', ->
 
@@ -126,4 +138,4 @@ describe 'airbrake_init', ->
       AirbrakeInit.initWinstonAirbrake(withEntry(exampleKeys, key, value)).airbrakeClient
 
     createAirbrakeWithoutConfigEntry = (key) ->
-      AirbrakeInit.initWinstonAirbrake(withoutEntry(exampleKeys, key))
+      AirbrakeInit.initWinstonAirbrake(withoutEntry(exampleKeys, key)).airbrakeClient

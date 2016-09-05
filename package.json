@@ -1,6 +1,6 @@
 {
   "name": "airbrake-init",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Helps to create node-airbrake and winston-airbrake instances",
   "main": "lib/airbrake_init",
   "scripts": {
@@ -33,7 +33,6 @@
   },
   "devDependencies": {
     "chai": "~> 3.5.0",
-    "should": "~> 6.0.1",
     "expect": "^1.14.0",
     "mocha": "~> 2.4.5",
     "xpath": "~> 0.0.23",
