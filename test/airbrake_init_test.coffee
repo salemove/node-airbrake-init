@@ -2,6 +2,9 @@ expect = (require 'chai').expect
 xpath = require('xpath')
 dom = require('xmldom').DOMParser
 AirbrakeInit = require('../lib/airbrake_init')
+sinon = require('sinon')
+assert = require('assert')
+memo = require('memo-is')
 
 describe 'airbrake_init', ->
 
@@ -18,7 +21,7 @@ describe 'airbrake_init', ->
   clone = (hash) ->
     JSON.parse(JSON.stringify(hash))
 
-  exampleKeys = 
+  exampleKeys =
     'projectId': '123'
     'apiKey': 'myAirbrakeId'
     'whiteListKeys': ['FOO']
@@ -50,6 +53,47 @@ describe 'airbrake_init', ->
     it 'requires whitelist', ->
       expect(() -> createAirbrakeWithoutConfigEntry('whiteListKeys'))
       .to.throw("You must specify a whitelist ('whiteListKeys')")
+
+    describe 'filters', ->
+      airbrake = null
+      environment = memo().is -> null
+
+      beforeEach ->
+        configKeys =
+          'projectId': '123'
+          'apiKey': 'myAirbrakeId'
+          'whiteListKeys': ['keys']
+          'developmentEnvironments': ['dev', 'staging']
+          'env': environment()
+        airbrake = AirbrakeInit.initAirbrake(configKeys)
+
+      it 'has a filter', ->
+        expect(airbrake.filters).to.have.length(1)
+
+      describe 'environment filter', ->
+        filter = null
+
+        errorNotice = (errorMessage) ->
+          airbrake.notifyJSON(new Error(errorMessage))
+
+        beforeEach ->
+          filter = airbrake.filters[0]
+
+        context 'in development environment', ->
+          environment.is -> 'dev'
+
+          it 'returns null', ->
+            notice = errorNotice('an error')
+            expect(filter(notice)).to.be.null
+
+        context 'in production environment', ->
+          environment.is -> 'prod'
+
+          it 'returns notice with same context', ->
+            notice = errorNotice('an error')
+            filteredNotice = filter(notice)
+            expect(filteredNotice).not.to.be.null
+            expect(filteredNotice.context).to.eql(notice.context)
 
     describe 'whitelist', ->
       beforeEach ->
