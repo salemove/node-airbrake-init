@@ -7,10 +7,17 @@ exports.initAirbrake = (opts) ->
   airbrake.env = opts.env if opts.env
   airbrake.protocol = opts.protocol if opts.protocol
   airbrake.servicehost = opts.host if opts.host
-  airbrake.developmentEnvironments = opts.developmentEnvironments if opts.developmentEnvironments
   airbrake.blackListKeys = opts.blackListKeys if opts.blackListKeys
   airbrake.whiteListKeys = opts.whiteListKeys if opts.whiteListKeys
   airbrake.ignoredExceptions = opts.ignoredExceptions if opts.ignoredExceptions
+
+  developmentEnvironmentFilter = (notice) ->
+    if notice.context.environment in opts.developmentEnvironments
+      null
+    else
+      notice
+
+  airbrake.addFilter(developmentEnvironmentFilter)
 
   airbrake
 

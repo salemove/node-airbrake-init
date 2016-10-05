@@ -11,7 +11,8 @@
     "url": "git+https://github.com/salemove/node-airbrake-init.git"
   },
   "keywords": [
-    "airbrake", "winston-airbrake"
+    "airbrake",
+    "winston-airbrake"
   ],
   "author": "SaleMove TechMovers <techmovers@salemove.com>",
   "license": "Apache-2.0",
@@ -19,14 +20,11 @@
     "url": "https://github.com/salemove/node-airbrake-init/issues"
   },
   "homepage": "https://github.com/salemove/node-airbrake-init#readme",
-  "scripts": {
-    "test": "mocha"
-  },
   "directories": {
     "test": "test"
   },
   "dependencies": {
-    "airbrake": "~> 1.0.3",
+    "airbrake": "~> 1.2",
     "winston": "^2.2.0",
     "winston-airbrake": "0.1.0",
     "coffee-script": "~> 1.9.2"
@@ -34,8 +32,11 @@
   "devDependencies": {
     "chai": "~> 3.5.0",
     "expect": "^1.14.0",
+    "memo-is": "0.0.2",
     "mocha": "~> 2.4.5",
-    "xpath": "~> 0.0.23",
-    "xmldom": "~> 0.1.22"
+    "should": "^11.1.0",
+    "sinon": "~1.7.2",
+    "xmldom": "~> 0.1.22",
+    "xpath": "~> 0.0.23"
   }
 }
