@@ -1,3 +1,4 @@
+R = require('ramda');
 
 exports.initAirbrake = (opts) ->
   checkRequiredFields(opts, isWinstonAirbrake: false)
@@ -11,13 +12,15 @@ exports.initAirbrake = (opts) ->
   airbrake.whiteListKeys = opts.whiteListKeys if opts.whiteListKeys
   airbrake.ignoredExceptions = opts.ignoredExceptions if opts.ignoredExceptions
 
-  developmentEnvironmentFilter = (notice) ->
+  noticeFilter = (notice) ->
     if notice.context.environment in opts.developmentEnvironments
       null
+    else if opts.fileTransformation
+      transformFile notice, opts.fileTransformation
     else
       notice
 
-  airbrake.addFilter(developmentEnvironmentFilter)
+  airbrake.addFilter(noticeFilter)
 
   airbrake
 
@@ -35,6 +38,15 @@ exports.initWinstonAirbrake = (opts) ->
   winstonAirbrake.airbrakeClient.ignoredExceptions = opts.ignoredExceptions if opts.ignoredExceptions
 
   winstonAirbrake
+
+transformFile = (notice, fileTransformation) ->
+  R.evolve({
+    errors: R.map(R.evolve({
+      backtrace: R.map(R.evolve({
+        file: R.replace(fileTransformation.pattern, fileTransformation.replacement)
+      }))
+    }))
+  }, notice)
 
 checkRequiredFields = (opts, {isWinstonAirbrake}) ->
   unless opts.apiKey

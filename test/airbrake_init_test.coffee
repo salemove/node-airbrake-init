@@ -57,6 +57,7 @@ describe 'airbrake_init', ->
     describe 'filters', ->
       airbrake = null
       environment = memo().is -> null
+      fileTransformation = memo().is -> null
 
       beforeEach ->
         configKeys =
@@ -64,6 +65,7 @@ describe 'airbrake_init', ->
           'apiKey': 'myAirbrakeId'
           'whiteListKeys': ['keys']
           'developmentEnvironments': ['dev', 'staging']
+          'fileTransformation': fileTransformation()
           'env': environment()
         airbrake = AirbrakeInit.initAirbrake(configKeys)
 
@@ -94,6 +96,34 @@ describe 'airbrake_init', ->
             filteredNotice = filter(notice)
             expect(filteredNotice).not.to.be.null
             expect(filteredNotice.context).to.eql(notice.context)
+
+
+          context 'file transformation', ->
+            fileTransformation.is -> {
+              pattern: /abc/,
+              replacement: 'def'
+            }
+
+            initialFile = 'abcd'
+            transformedFile = 'defd'
+
+            it 'transforms file', ->
+              notice = {
+                errors: [
+                  {
+                    backtrace: [
+                      {
+                        file: initialFile
+                      }
+                    ]
+                  }
+                ],
+                context : {
+                  environment: environment()
+                }
+              }
+              filteredNotice = filter(notice)
+              expect(filteredNotice.errors[0].backtrace[0].file).to.eql(transformedFile)
 
     describe 'whitelist', ->
       beforeEach ->
