@@ -1,9 +1,5 @@
 expect = (require 'chai').expect
-xpath = require('xpath')
-dom = require('xmldom').DOMParser
 AirbrakeInit = require('../lib/airbrake_init')
-sinon = require('sinon')
-assert = require('assert')
 memo = require('memo-is')
 
 describe 'airbrake_init', ->
@@ -142,9 +138,6 @@ describe 'airbrake_init', ->
         noticeJSON = buildNoticeEnvironmentJSON(createAirbrakeWithConfigEntry('whiteListKeys', ['MY_OTHER_VAR']))
         noticeJSON['SECRET_STUFF'].should.eql(filtered)
 
-    buildNoticeEnvironmentJSON = (airbrake) ->
-      airbrake.environmentJSON(new Error('error'))
-
     createAirbrakeWithConfigEntry = (key, value) ->
       AirbrakeInit.initAirbrake(withEntry(exampleKeys, key, value))
 
@@ -195,21 +188,18 @@ describe 'airbrake_init', ->
         delete process.env.SECRET_STUFF
 
       it 'allows parameters in list', ->
-        noticeXmlDom = buildNoticeXmlDom(createAirbrakeWithConfigEntry('whiteListKeys', ['MY_VAR']))
-        extractEnvironmentVariableFromNotice(noticeXmlDom, 'MY_VAR').should.eql('o hi')
+        noticeJSON = buildNoticeEnvironmentJSON(createAirbrakeWithConfigEntry('whiteListKeys', ['MY_VAR']))
+        noticeJSON['MY_VAR'].should.eql('o hi')
 
       it 'filters parameters not in list', ->
-        noticeXmlDom = buildNoticeXmlDom(createAirbrakeWithConfigEntry('whiteListKeys', ['TOTALLY_NOT_SECRET']))
-        extractEnvironmentVariableFromNotice(noticeXmlDom, 'SECRET_STUFF').should.eql(filtered)
-
-    buildNoticeXmlDom = (airbrakeClient) ->
-      new dom().parseFromString(airbrakeClient.notifyXml(new Error('error')).toString())
-
-    extractEnvironmentVariableFromNotice = (noticeXmlDom, key) ->
-      xpath.select("//request/cgi-data/var[@key='#{key}']/text()", noticeXmlDom)[0].toString()
+        noticeJSON = buildNoticeEnvironmentJSON(createAirbrakeWithConfigEntry('whiteListKeys', ['TOTALLY_NOT_SECRET']))
+        noticeJSON['SECRET_STUFF'].should.eql(filtered)
 
     createAirbrakeWithConfigEntry = (key, value) ->
       AirbrakeInit.initWinstonAirbrake(withEntry(exampleKeys, key, value)).airbrakeClient
 
     createAirbrakeWithoutConfigEntry = (key) ->
       AirbrakeInit.initWinstonAirbrake(withoutEntry(exampleKeys, key)).airbrakeClient
+
+  buildNoticeEnvironmentJSON = (airbrake) ->
+    airbrake.environmentJSON(new Error('error'))
