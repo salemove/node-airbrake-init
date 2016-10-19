@@ -195,6 +195,77 @@ describe 'airbrake_init', ->
         noticeJSON = buildNoticeEnvironmentJSON(createAirbrakeWithConfigEntry('whiteListKeys', ['TOTALLY_NOT_SECRET']))
         noticeJSON['SECRET_STUFF'].should.eql(filtered)
 
+    describe 'filters', ->
+      airbrake = null
+      environment = memo().is -> null
+      fileTransformation = memo().is -> null
+
+      beforeEach ->
+        configKeys =
+          'projectId': '123'
+          'apiKey': 'myAirbrakeId'
+          'whiteListKeys': ['keys']
+          'developmentEnvironments': ['dev', 'staging']
+          'fileTransformation': fileTransformation()
+          'env': environment()
+        airbrake = AirbrakeInit.initWinstonAirbrake(configKeys).airbrakeClient
+
+      it 'has a filter', ->
+        expect(airbrake.filters).to.have.length(1)
+
+      describe 'environment filter', ->
+        filter = null
+
+        errorNotice = (errorMessage) ->
+          airbrake.notifyJSON(new Error(errorMessage))
+
+        beforeEach ->
+          filter = airbrake.filters[0]
+
+        context 'in development environment', ->
+          environment.is -> 'dev'
+
+          it 'returns null', ->
+            notice = errorNotice('an error')
+            expect(filter(notice)).to.be.null
+
+        context 'in production environment', ->
+          environment.is -> 'prod'
+
+          it 'returns notice with same context', ->
+            notice = errorNotice('an error')
+            filteredNotice = filter(notice)
+            expect(filteredNotice).not.to.be.null
+            expect(filteredNotice.context).to.eql(notice.context)
+
+
+          context 'file transformation', ->
+            fileTransformation.is -> {
+              pattern: /abc/,
+              replacement: 'def'
+            }
+
+            initialFile = 'abcd'
+            transformedFile = 'defd'
+
+            it 'transforms file', ->
+              notice = {
+                errors: [
+                  {
+                    backtrace: [
+                      {
+                        file: initialFile
+                      }
+                    ]
+                  }
+                ],
+                context : {
+                  environment: environment()
+                }
+              }
+              filteredNotice = filter(notice)
+              expect(filteredNotice.errors[0].backtrace[0].file).to.eql(transformedFile)
+
     createAirbrakeWithConfigEntry = (key, value) ->
       AirbrakeInit.initWinstonAirbrake(withEntry(exampleKeys, key, value)).airbrakeClient
 
