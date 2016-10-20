@@ -155,6 +155,10 @@ describe 'airbrake_init', ->
       expect(airbrake.ignoredExceptions).to.eql(['plzignore'])
       expect(airbrake.env).to.eql('prod')
 
+    it 'requires project ID', ->
+      expect(() -> createAirbrakeWithoutConfigEntry('projectId'))
+        .to.throw("You must specify an Airbrake project ID ('projectId')")
+
     it 'requires API key', ->
       expect(() -> createAirbrakeWithoutConfigEntry('apiKey'))
         .to.throw("You must specify an Airbrake API key ('apiKey')")

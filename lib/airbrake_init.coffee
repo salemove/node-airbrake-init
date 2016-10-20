@@ -1,7 +1,7 @@
 R = require('ramda');
 
 exports.initAirbrake = (opts) ->
-  checkRequiredFields(opts, isWinstonAirbrake: false)
+  checkRequiredFields(opts)
 
   airbrake = require('airbrake').createClient(opts.projectId, opts.apiKey)
 
@@ -16,7 +16,7 @@ exports.initAirbrake = (opts) ->
   airbrake
 
 exports.initWinstonAirbrake = (opts) ->
-  checkRequiredFields(opts, isWinstonAirbrake: true)
+  checkRequiredFields(opts)
 
   if !(opts.env)
     opts.env = process.env.NODE_ENV || 'development'
@@ -49,10 +49,10 @@ transformFile = (notice, fileTransformation) ->
     }))
   }, notice)
 
-checkRequiredFields = (opts, {isWinstonAirbrake}) ->
+checkRequiredFields = (opts) ->
   unless opts.apiKey
     throw "You must specify an Airbrake API key ('apiKey')"
   unless opts.whiteListKeys
     throw "You must specify a whitelist ('whiteListKeys')"
-  unless (isWinstonAirbrake || opts.projectId)
+  unless opts.projectId
     throw "You must specify an Airbrake project ID ('projectId')"
