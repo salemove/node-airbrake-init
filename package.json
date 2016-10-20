@@ -28,16 +28,13 @@
     "coffee-script": "~> 1.9.2",
     "ramda": "^0.22.1",
     "winston": "^2.2.0",
-    "winston-airbrake": "0.1.0"
+    "winston-airbrake": "git@github.com:salemove/winston-airbrake#5a6f37684a311e2874e4817b64a406243924628f"
   },
   "devDependencies": {
     "chai": "~> 3.5.0",
     "expect": "^1.14.0",
     "memo-is": "0.0.2",
     "mocha": "~> 2.4.5",
-    "should": "^11.1.0",
-    "sinon": "~1.7.2",
-    "xmldom": "~> 0.1.22",
-    "xpath": "~> 0.0.23"
+    "should": "^11.1.0"
   }
 }
