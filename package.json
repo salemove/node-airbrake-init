@@ -24,17 +24,17 @@
     "test": "test"
   },
   "dependencies": {
-    "airbrake": "~> 1.2",
-    "coffee-script": "~> 1.9.2",
-    "ramda": "^0.22.1",
-    "winston": "^2.2.0",
-    "winston-airbrake": "1.0.0"
+    "airbrake": "~> 2.0",
+    "coffee-script": "~> 1.12",
+    "ramda": "~> 0.24"
   },
   "devDependencies": {
     "chai": "~> 3.5.0",
     "expect": "^1.14.0",
     "memo-is": "0.0.2",
     "mocha": "~> 2.4.5",
-    "should": "^11.1.0"
+    "should": "^11.1.0",
+    "winston": "^2.2.0",
+    "winston-airbrake": "1.0.0"
   }
 }
