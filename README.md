@@ -3,6 +3,9 @@ Node AirbrakeInit
 
 Helps to instantiate node-airbrake and winston-airbrake
 
+[![Build Status](https://travis-ci.org/salemove/node-airbrake-init.svg?branch=master)](https://travis-ci.org/salemove/node-airbrake-init)
+
+
 ## Installation
 
 Using npm form the command line
