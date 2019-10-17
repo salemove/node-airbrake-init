@@ -1,0 +1,7 @@
+[
+  {
+    "component": "sync-exec",
+    "version" : "0.6.2",
+    "justification": "Medium. Package seems unmaintained, no fix available."
+  }
+]

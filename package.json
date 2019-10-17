@@ -4,7 +4,8 @@
   "description": "Helps to create node-airbrake and winston-airbrake instances",
   "main": "lib/airbrake_init",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "security-scan": "retire --package --node"
   },
   "repository": {
     "type": "git",
@@ -32,7 +33,8 @@
     "chai": "~> 3.5.0",
     "expect": "^1.14.0",
     "memo-is": "0.0.2",
-    "mocha": "~> 2.4.5",
+    "mocha": "~> 5.1.0",
+    "retire": "^2.0.3",
     "should": "^11.1.0",
     "winston": "^2.2.0",
     "winston-airbrake": "1.0.0"
