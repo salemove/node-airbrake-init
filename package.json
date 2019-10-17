@@ -24,9 +24,9 @@
     "test": "test"
   },
   "dependencies": {
-    "airbrake": "~> 2.0",
-    "coffee-script": "~> 1.12",
-    "ramda": "~> 0.24"
+    "airbrake": "~> 2.1",
+    "coffeescript": "~> 2.4",
+    "ramda": "~> 0.26"
   },
   "devDependencies": {
     "chai": "~> 3.5.0",
