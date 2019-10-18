@@ -1,10 +1,11 @@
 {
   "name": "airbrake-init",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Helps to create node-airbrake and winston-airbrake instances",
   "main": "lib/airbrake_init",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "security-scan": "retire --package --node"
   },
   "repository": {
     "type": "git",
@@ -24,15 +25,16 @@
     "test": "test"
   },
   "dependencies": {
-    "airbrake": "~> 2.0",
-    "coffee-script": "~> 1.12",
-    "ramda": "~> 0.24"
+    "airbrake": "~> 2.1",
+    "coffeescript": "~> 2.4",
+    "ramda": "~> 0.26"
   },
   "devDependencies": {
     "chai": "~> 3.5.0",
     "expect": "^1.14.0",
     "memo-is": "0.0.2",
-    "mocha": "~> 2.4.5",
+    "mocha": "~> 5.1.0",
+    "retire": "^2.0.3",
     "should": "^11.1.0",
     "winston": "^2.2.0",
     "winston-airbrake": "1.0.0"
